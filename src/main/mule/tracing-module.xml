@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="42846049-20f1-4b82-8fde-08e8e4c26077" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="tracing-moduleFlow" doc:id="aadc3b1c-89be-4c72-9510-c12612cf47a6" >
+		<http:listener doc:name="Listener" doc:id="b337c678-ec79-4182-8aa7-011aaecaebc6" config-ref="HTTP_Listener_config" path="/api"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="099788f8-c7b9-4778-9795-0f53049538a9" />
+		<tracing:with-correlation-id doc:name="With CorrelationID" doc:id="84c92504-9b89-4d3b-a853-6583b8c23b0c" correlationId="#[1234321]">
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="a84ecc12-991d-4b66-852a-8a6dcfece282" />
+		</tracing:with-correlation-id>
+		<ee:transform doc:name="Transform Message" doc:id="36aae56a-5536-4101-81ed-52d7c0451449" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
